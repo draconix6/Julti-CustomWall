@@ -14,6 +14,10 @@ import xyz.duncanruns.julti.JultiOptions;
 import xyz.duncanruns.julti.util.ExceptionUtil;
 import xyz.duncanruns.julti.util.FileUtil;
 
+/**
+ * @author DuncanRuns
+ * @author draconix6
+ */
 public class CustomWallOptions {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path SAVE_PATH = JultiOptions.getJultiDir().resolve("customwalloptions.json");

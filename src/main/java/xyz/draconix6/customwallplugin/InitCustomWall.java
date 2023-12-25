@@ -6,6 +6,10 @@ import xyz.duncanruns.julti.plugin.PluginEvents;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * @author DuncanRuns
+ * @author draconix6
+ */
 public class InitCustomWall {
     public static void init() {
         PluginEvents.RunnableEventType.RELOAD.register(() -> {

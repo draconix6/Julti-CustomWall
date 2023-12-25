@@ -14,6 +14,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+/**
+ * @author DuncanRuns
+ * @author draconix6
+ */
 public class JultiCustomWall implements PluginInitializer {
     public static void main(String[] args) throws IOException {
         // This is only used to test the plugin in the dev environment

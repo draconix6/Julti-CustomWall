@@ -1,5 +1,9 @@
 package xyz.draconix6.customwallplugin;
 
+import org.apache.logging.log4j.Level;
+import xyz.duncanruns.julti.Julti;
+import xyz.duncanruns.julti.gui.JultiGUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -15,7 +19,7 @@ public class CustomWallGUI extends JFrame {
 //    private JPasswordField accessKeyField;
     private JPanel mainPanel;
     private JPanel layoutSelectPanel;
-    private JComboBox layoutBox;
+    private JComboBox<CustomWallLayout> layoutBox;
     private JButton newButton;
     private JButton deleteButton;
     private JPanel layoutEditPanel;
@@ -37,9 +41,13 @@ public class CustomWallGUI extends JFrame {
     private JTextField bgWidthField;
     private JTextField bgHeightField;
     private JCheckBox replaceLockedInstancesCheckBox;
+    private JCheckBox lockVertical;
+    private JCheckBox bgVertical;
     private boolean closed = false;
 
     public CustomWallGUI() {
+        CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
+
         this.setTitle("Julti Custom Wall Config");
 
         this.setContentPane(this.mainPanel);
@@ -50,28 +58,31 @@ public class CustomWallGUI extends JFrame {
             }
         });
 
-        CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
-//        this.enabledCheckBox.setSelected(options.enabledForPlugin);
-//        this.enabledCheckBox.addActionListener(e -> {
-//            this.saveButton.setEnabled(this.hasChanges());
-//            if (asPlugin) {
-//                this.accessKeyField.setEnabled(this.checkBoxEnabled());
-//            }
-//        });
-//        this.accessKeyField.setText(options.accessKey);
-//        this.accessKeyField.addKeyListener(new KeyAdapter() {
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//                if (e.getKeyChar() == '\n') {
-//                    PaceManTrackerGUI.this.save();
-//                }
-//                PaceManTrackerGUI.this.saveButton.setEnabled(PaceManTrackerGUI.this.hasChanges());
-//            }
-//
-//        });
-//        if (asPlugin) {
-//            this.accessKeyField.setEnabled(options.enabledForPlugin);
-//        }
+        this.newButton.addActionListener(e -> {
+            CustomWallLayout layout = new CustomWallLayout();
+            options.layouts.add(layout);
+            options.currentLayout = layout;
+
+            layoutBox.addItem(layout);
+            layoutBox.setSelectedItem(layout);
+
+            this.updateTextBoxes();
+            this.save();
+        });
+
+        this.deleteButton.addActionListener(e -> {
+            if (options.layouts.size() == 1) return;
+
+            layoutBox.removeItem(options.currentLayout);
+            options.layouts.remove(options.currentLayout);
+
+            options.currentLayout = options.layouts.get(0);
+            layoutBox.setSelectedItem(options.currentLayout);
+
+            this.updateTextBoxes();
+            this.save();
+        });
+
         this.saveButton.addActionListener(e -> this.save());
         this.saveButton.setEnabled(this.hasChanges());
         this.revalidate();
@@ -93,19 +104,66 @@ public class CustomWallGUI extends JFrame {
         return instance;
     }
 
+    private void updateTextBoxes() {
+        CustomWallLayout layout = CustomWallOptions.getCustomWallOptions().currentLayout;
+
+        this.focusXField.setText(Integer.toString(layout.focusGridArea.x));
+        this.focusYField.setText(Integer.toString(layout.focusGridArea.y));
+        this.focusWidthField.setText(Integer.toString(layout.focusGridArea.width));
+        this.focusHeightField.setText(Integer.toString(layout.focusGridArea.height));
+
+        this.lockXField.setText(Integer.toString(layout.lockArea.x));
+        this.lockYField.setText(Integer.toString(layout.lockArea.y));
+        this.lockWidthField.setText(Integer.toString(layout.lockArea.width));
+        this.lockHeightField.setText(Integer.toString(layout.lockArea.height));
+
+        this.bgXField.setText(Integer.toString(layout.bgArea.x));
+        this.bgYField.setText(Integer.toString(layout.bgArea.y));
+        this.bgWidthField.setText(Integer.toString(layout.bgArea.width));
+        this.bgHeightField.setText(Integer.toString(layout.bgArea.height));
+    }
+
     private boolean hasChanges() {
-        CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
+//        CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
 //        return (this.checkBoxEnabled() != options.enabledForPlugin) || (!Objects.equals(this.getKeyBoxText(), options.accessKey));
         return true;
     }
 
     private void save() {
         CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
+
+        try {
+            options.currentLayout.focusGridArea = new Rectangle(
+                    Integer.parseInt(this.focusXField.getText()),
+                    Integer.parseInt(this.focusXField.getText()),
+                    Integer.parseInt(this.focusXField.getText()),
+                    Integer.parseInt(this.focusXField.getText())
+            );
+
+            options.currentLayout.lockArea = new Rectangle(
+                    Integer.parseInt(this.lockXField.getText()),
+                    Integer.parseInt(this.lockXField.getText()),
+                    Integer.parseInt(this.lockXField.getText()),
+                    Integer.parseInt(this.lockXField.getText())
+            );
+
+            options.currentLayout.bgArea = new Rectangle(
+                    Integer.parseInt(this.bgXField.getText()),
+                    Integer.parseInt(this.bgXField.getText()),
+                    Integer.parseInt(this.bgXField.getText()),
+                    Integer.parseInt(this.bgXField.getText())
+            );
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(JultiGUI.getPluginsGUI(), "Invalid input detected - please only use whole numbers.", "Custom Wall - Error", JOptionPane.ERROR_MESSAGE);
+        }
+
         CustomWallOptions.save();
-        this.saveButton.setEnabled(this.hasChanges());
     }
 
-    private void onClose() { this.closed = true; }
+    private void onClose() {
+        this.save();
+        this.closed = true;
+    }
 
     private boolean isClosed() { return this.closed; }
 }

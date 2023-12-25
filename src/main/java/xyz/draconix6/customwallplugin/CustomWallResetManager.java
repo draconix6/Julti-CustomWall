@@ -17,10 +17,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * @author DuncanRuns
+ * @author draconix6
+ */
 public class CustomWallResetManager extends DynamicWallResetManager {
     private static final CustomWallResetManager INSTANCE = new CustomWallResetManager();
 
     private List<Integer> displayInstancesIndices = new ArrayList<>();
+    private List<Integer> bgInstancesIndices = new ArrayList<>();
     private boolean isFirstReset = true;
 
     public static CustomWallResetManager getCustomWallResetManager() {
@@ -35,6 +40,16 @@ public class CustomWallResetManager extends DynamicWallResetManager {
     private void saveDisplayInstances(List<MinecraftInstance> displayInstances) {
         List<MinecraftInstance> allInstances = InstanceManager.getInstanceManager().getInstances();
         this.displayInstancesIndices = displayInstances.stream().map(i -> i == null ? null : allInstances.indexOf(i)).collect(Collectors.toList());
+    }
+
+    private List<MinecraftInstance> getBGInstances() {
+        List<MinecraftInstance> allInstances = InstanceManager.getInstanceManager().getInstances();
+        return this.bgInstancesIndices.stream().map(i -> i == null || i >= allInstances.size() ? null : allInstances.get(i)).collect(Collectors.toList());
+    }
+
+    private void saveBGInstances(List<MinecraftInstance> bgInstances) {
+        List<MinecraftInstance> allInstances = InstanceManager.getInstanceManager().getInstances();
+        this.bgInstancesIndices = bgInstances.stream().map(i -> i == null ? null : allInstances.indexOf(i)).collect(Collectors.toList());
     }
 
     public void refreshDisplayInstances() {
@@ -83,6 +98,7 @@ public class CustomWallResetManager extends DynamicWallResetManager {
             displayInstances.set(displayInstances.indexOf(null), removed);
         }
         this.saveDisplayInstances(displayInstances);
+        this.saveBGInstances(instancePool);
     }
 
     @Override
@@ -140,6 +156,9 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         // Forcing 16:9 ratio for non-focus instance size
         Dimension lockedInstanceSize = new Dimension((int) (dwInnerSize.height * 16.0f / 9.0f), dwInnerSize.height);
 
+        if (cwOptions.currentLayout.bgVertical) {
+            return new Rectangle(lockArea.x, lockArea.y + lockedInstanceSize.height * instanceIndex, lockedInstanceSize.width, lockedInstanceSize.height);
+        }
         return new Rectangle(lockArea.x + lockedInstanceSize.width * instanceIndex, lockArea.y, lockedInstanceSize.width, lockedInstanceSize.height);
     }
 
@@ -148,7 +167,8 @@ public class CustomWallResetManager extends DynamicWallResetManager {
 
         Rectangle bgArea = cwOptions.currentLayout.bgArea;
 
-        int instanceIndex = InstanceManager.getInstanceManager().getInstances().stream();
+        List<MinecraftInstance> bgInstances = this.getBGInstances();
+        int instanceIndex = bgInstances.indexOf(instance);
 
         // Dimensions are manually defined in the custom wall layout, so sceneSize is ignored
         Dimension dwInnerSize = bgArea.getSize();
@@ -156,6 +176,9 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         // Forcing 16:9 ratio for non-focus instance size
         Dimension bgInstanceSize = new Dimension((int) (dwInnerSize.height * 16.0f / 9.0f), dwInnerSize.height);
 
+        if (cwOptions.currentLayout.bgVertical) {
+            return new Rectangle(bgArea.x, bgArea.y + bgInstanceSize.height * instanceIndex, bgInstanceSize.width, bgInstanceSize.height);
+        }
         return new Rectangle(bgArea.x + bgInstanceSize.width * instanceIndex, bgArea.y, bgInstanceSize.width, bgInstanceSize.height);
     }
 }
