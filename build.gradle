@@ -18,6 +18,7 @@ repositories {
 dependencies {
     // Choose Julti version: https://jitpack.io/#DuncanRuns/Julti
     implementation 'com.github.DuncanRuns:Julti:v1.0.2'
+    implementation 'com.intellij:forms_rt:7.0.3'
 }
 
 

@@ -14,7 +14,7 @@ public class InitCustomWall {
     public static void init() {
         PluginEvents.RunnableEventType.RELOAD.register(() -> {
             // This gets run when Julti launches and every time the profile is switched
-            Julti.log(Level.INFO, "Custom Wall Plugin Reloaded!");
+            Julti.log(Level.DEBUG, "Custom Wall Plugin Reloaded!");
         });
 
         PluginEvents.RunnableEventType.STOP.register(() -> {

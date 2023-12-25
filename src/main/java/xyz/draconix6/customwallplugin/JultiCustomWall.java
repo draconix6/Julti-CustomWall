@@ -8,8 +8,8 @@ import xyz.duncanruns.julti.gui.JultiGUI;
 import xyz.duncanruns.julti.gui.PluginsGUI;
 import xyz.duncanruns.julti.plugin.PluginInitializer;
 import xyz.duncanruns.julti.plugin.PluginManager;
+import xyz.duncanruns.julti.resetting.ResetHelper;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -31,6 +31,7 @@ public class JultiCustomWall implements PluginInitializer {
     public void initialize() {
         // This gets run once when Julti launches
         CustomWallOptions.load();
+        ResetHelper.registerResetStyle("Custom Wall", CustomWallResetManager::getCustomWallResetManager);
         InitCustomWall.init();
         Julti.log(Level.INFO, "Custom Wall Plugin Initialized - using " + CustomWallOptions.getCustomWallOptions().currentLayout.name);
     }

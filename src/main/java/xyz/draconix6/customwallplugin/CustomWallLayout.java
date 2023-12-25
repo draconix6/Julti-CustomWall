@@ -22,6 +22,15 @@ public class CustomWallLayout {
         this.bgVertical = false;
     }
 
+    public CustomWallLayout(String name) {
+        this.name = name;
+        this.focusGridArea = new Rectangle(0, 0, 1920, 900);
+        this.lockArea = new Rectangle(0, 900, 1920, 180);
+        this.bgArea = new Rectangle(1920, 0, 100, 100);
+        this.lockVertical = false;
+        this.bgVertical = false;
+    }
+
     public CustomWallLayout(String name, Rectangle focusGridArea, Rectangle lockArea, Rectangle bgArea, boolean lockVertical, boolean bgVertical) {
         this.name = name;
         this.focusGridArea = focusGridArea;
@@ -29,5 +38,10 @@ public class CustomWallLayout {
         this.bgArea = bgArea;
         this.lockVertical = lockVertical;
         this.bgVertical = bgVertical;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

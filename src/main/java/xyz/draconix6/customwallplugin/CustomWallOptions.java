@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.*;
 
 import org.apache.logging.log4j.Level;
 import xyz.duncanruns.julti.Julti;
@@ -24,7 +24,7 @@ public class CustomWallOptions {
 
     private static CustomWallOptions instance = null;
 
-    public List<CustomWallLayout> layouts;
+    public List<CustomWallLayout> layouts = new ArrayList<>();
     public CustomWallLayout currentLayout = null;
     public boolean replaceLocked = true;
 
@@ -36,6 +36,7 @@ public class CustomWallOptions {
         if (!Files.exists(SAVE_PATH)) {
             instance = new CustomWallOptions();
             instance.currentLayout = new CustomWallLayout();
+            instance.layouts.add(instance.currentLayout);
         } else {
             String s;
             try {

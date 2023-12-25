@@ -136,8 +136,8 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         int x = (int) (col * iWidth);
         int y = (int) (row * iHeight);
         return new Rectangle(
-                x,
-                y,
+                x + cwOptions.currentLayout.focusGridArea.x,
+                y + cwOptions.currentLayout.focusGridArea.y,
                 (int) ((col + 1) * iWidth) - x,
                 (int) ((row + 1) * iHeight) - y
         );
@@ -156,7 +156,7 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         // Forcing 16:9 ratio for non-focus instance size
         Dimension lockedInstanceSize = new Dimension((int) (dwInnerSize.height * 16.0f / 9.0f), dwInnerSize.height);
 
-        if (cwOptions.currentLayout.bgVertical) {
+        if (cwOptions.currentLayout.lockVertical) {
             return new Rectangle(lockArea.x, lockArea.y + lockedInstanceSize.height * instanceIndex, lockedInstanceSize.width, lockedInstanceSize.height);
         }
         return new Rectangle(lockArea.x + lockedInstanceSize.width * instanceIndex, lockArea.y, lockedInstanceSize.width, lockedInstanceSize.height);
