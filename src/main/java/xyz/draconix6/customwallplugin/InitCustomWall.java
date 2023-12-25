@@ -10,28 +10,12 @@ public class InitCustomWall {
     public static void init() {
         PluginEvents.RunnableEventType.RELOAD.register(() -> {
             // This gets run when Julti launches and every time the profile is switched
-            Julti.log(Level.INFO, "Example Plugin Reloaded!");
-        });
-
-        AtomicLong timeTracker = new AtomicLong(System.currentTimeMillis());
-
-        PluginEvents.RunnableEventType.END_TICK.register(() -> {
-            // This gets run every tick (1 ms)
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - timeTracker.get() > 3000) {
-                // This gets ran every 3 seconds
-                // Julti.log(Level.INFO, "Example Plugin ran for another 3 seconds.");
-                timeTracker.set(currentTime);
-            }
+            Julti.log(Level.INFO, "Custom Wall Plugin Reloaded!");
         });
 
         PluginEvents.RunnableEventType.STOP.register(() -> {
             // This gets run when Julti is shutting down
-            Julti.log(Level.INFO, "Example plugin shutting down...");
-        });
-
-        PluginEvents.InstanceEventType.ACTIVATE.register(instance -> {
-            Julti.log(Level.INFO, "ExamplePlugin: Instance activated: " + instance);
+            Julti.log(Level.INFO, "Custom Wall plugin shutting down...");
         });
     }
 }

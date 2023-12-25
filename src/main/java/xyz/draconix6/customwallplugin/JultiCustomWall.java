@@ -5,10 +5,12 @@ import org.apache.logging.log4j.Level;
 import xyz.duncanruns.julti.Julti;
 import xyz.duncanruns.julti.JultiAppLaunch;
 import xyz.duncanruns.julti.gui.JultiGUI;
+import xyz.duncanruns.julti.gui.PluginsGUI;
 import xyz.duncanruns.julti.plugin.PluginInitializer;
 import xyz.duncanruns.julti.plugin.PluginManager;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -25,16 +27,12 @@ public class JultiCustomWall implements PluginInitializer {
     public void initialize() {
         // This gets run once when Julti launches
         InitCustomWall.init();
-        Julti.log(Level.INFO, "Custom Wall Plugin Initialized");
-    }
-
-    @Override
-    public String getMenuButtonName() {
-        return "Open";
+        Julti.log(Level.INFO, "Custom Wall Plugin Initialized - using " + CustomWallOptions.getCustomWallOptions().currentLayout.name);
     }
 
     @Override
     public void onMenuButtonPress() {
-        JOptionPane.showMessageDialog(JultiGUI.getPluginsGUI(), "Hi", "Julti Custom Wall Config", JOptionPane.INFORMATION_MESSAGE);
+        PluginsGUI pluginsGUI = JultiGUI.getPluginsGUI();
+        CustomWallGUI.open(new Point(pluginsGUI.getX() + pluginsGUI.getWidth(), pluginsGUI.getY()));
     }
 }
