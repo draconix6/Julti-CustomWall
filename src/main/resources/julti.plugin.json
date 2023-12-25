@@ -1,6 +1,6 @@
 {
-  "name": "Julti Example Plugin",
-  "id": "julti-example-plugin",
+  "name": "Custom Wall",
+  "id": "julti-custom-wall",
   "version": "${version}",
-  "initializer": "xyz.duncanruns.julti.exampleplugin.ExamplePlugin"
+  "initializer": "xyz.draconix6.customwallplugin.JultiCustomWall"
 }
