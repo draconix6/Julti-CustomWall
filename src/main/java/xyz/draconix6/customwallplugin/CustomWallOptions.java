@@ -35,6 +35,7 @@ public class CustomWallOptions {
     public static void load() {
         if (!Files.exists(SAVE_PATH)) {
             instance = new CustomWallOptions();
+            instance.currentLayout = new CustomWallLayout();
         } else {
             String s;
             try {

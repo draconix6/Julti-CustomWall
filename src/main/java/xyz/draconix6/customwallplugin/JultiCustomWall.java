@@ -30,6 +30,7 @@ public class JultiCustomWall implements PluginInitializer {
     @Override
     public void initialize() {
         // This gets run once when Julti launches
+        CustomWallOptions.load();
         InitCustomWall.init();
         Julti.log(Level.INFO, "Custom Wall Plugin Initialized - using " + CustomWallOptions.getCustomWallOptions().currentLayout.name);
     }
