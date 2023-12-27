@@ -11,7 +11,9 @@ public class CustomWallLayout {
     public Rectangle lockArea;
     public Rectangle bgArea;
     public boolean lockVertical;
+    public boolean lockStretch;
     public boolean bgVertical;
+    public boolean bgStretch;
 
     public CustomWallLayout() {
         this.name = "Layout";
@@ -19,7 +21,9 @@ public class CustomWallLayout {
         this.lockArea = new Rectangle(0, 900, 1920, 180);
         this.bgArea = new Rectangle(1920, 0, 100, 100);
         this.lockVertical = false;
+        this.lockStretch = false;
         this.bgVertical = false;
+        this.bgStretch = false;
     }
 
     public CustomWallLayout(String name) {
@@ -28,16 +32,21 @@ public class CustomWallLayout {
         this.lockArea = new Rectangle(0, 900, 1920, 180);
         this.bgArea = new Rectangle(1920, 0, 100, 100);
         this.lockVertical = false;
+        this.lockStretch = false;
         this.bgVertical = false;
+        this.bgStretch = false;
     }
 
+    // probably useless, whoops
     public CustomWallLayout(String name, Rectangle focusGridArea, Rectangle lockArea, Rectangle bgArea, boolean lockVertical, boolean bgVertical) {
         this.name = name;
         this.focusGridArea = focusGridArea;
         this.lockArea = lockArea;
         this.bgArea = bgArea;
         this.lockVertical = lockVertical;
+        this.lockStretch = false;
         this.bgVertical = bgVertical;
+        this.bgStretch = false;
     }
 
     @Override
