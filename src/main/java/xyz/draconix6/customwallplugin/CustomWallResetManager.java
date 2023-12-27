@@ -1,5 +1,7 @@
 package xyz.draconix6.customwallplugin;
 
+import org.apache.logging.log4j.Level;
+import xyz.duncanruns.julti.Julti;
 import xyz.duncanruns.julti.JultiOptions;
 import xyz.duncanruns.julti.affinity.AffinityManager;
 import xyz.duncanruns.julti.instance.MinecraftInstance;
@@ -33,7 +35,9 @@ public class CustomWallResetManager extends DynamicWallResetManager {
 
     private List<MinecraftInstance> getDisplayInstances() {
         List<MinecraftInstance> allInstances = InstanceManager.getInstanceManager().getInstances();
-        return this.displayInstancesIndices.stream().map(i -> i == null || i >= allInstances.size() ? null : allInstances.get(i)).collect(Collectors.toList());
+        List<MinecraftInstance> list = this.displayInstancesIndices.stream().map(i -> i == null || i >= allInstances.size() ? null : allInstances.get(i)).collect(Collectors.toList());
+//        Julti.log(Level.INFO, Integer.toString(list.size()));
+        return list;
     }
 
     private void saveDisplayInstances(List<MinecraftInstance> displayInstances) {
@@ -104,10 +108,7 @@ public class CustomWallResetManager extends DynamicWallResetManager {
     @Override
     public List<ActionResult> doWallFullReset() {
         List<ActionResult> actionResults = new ArrayList<>();
-        if (this.isFirstReset && !(actionResults = super.doWallFullReset()).isEmpty()) {
-            this.isFirstReset = false;
-            return actionResults;
-        }
+        this.isFirstReset = false; // since super will lead to dynamicwallresetmanager which is bad
         if (!ActiveWindowManager.isWallActive()) {
             return actionResults;
         }
@@ -125,11 +126,9 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         if (JultiOptions.getJultiOptions().useAffinity) {
             AffinityManager.ping();
         }
-        // Fill display & BG with null then refresh to ensure good order
+        // Fill display with null then refresh to ensure good order
         Collections.fill(this.displayInstancesIndices, null);
-        Collections.fill(this.bgInstancesIndices, null);
         this.refreshDisplayInstances();
-
         // Return true if something has happened: instances were reset OR the display was updated
         return actionResults;
     }
@@ -166,18 +165,28 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         return actionResults;
     }
 
-    @Override
-    public boolean resetInstance(MinecraftInstance instance, boolean bypassConditions) {
-        List<MinecraftInstance> displayInstances = this.getDisplayInstances();
+//    @Override
+//    public boolean resetInstance(MinecraftInstance instance, boolean bypassConditions) {
+//        List<MinecraftInstance> displayInstances = this.getDisplayInstances();
+//
+//
+//        if (super.resetInstance(instance, bypassConditions)) {
+//            if (displayInstances.contains(instance)) {
+//                this.displayInstancesIndices.set(displayInstances.indexOf(instance), null);
+//            }
+//            this.refreshDisplayInstances();
+//            return true;
+//        }
+//        return false;
+//    }
 
-        if (super.resetInstance(instance, bypassConditions)) {
-            if (displayInstances.contains(instance)) {
-                this.displayInstancesIndices.set(displayInstances.indexOf(instance), null);
-            }
+    @Override
+    public boolean lockInstance(MinecraftInstance instance) {
+        boolean result = super.lockInstance(instance);
+        if (CustomWallOptions.getCustomWallOptions().replaceLocked) {
             this.refreshDisplayInstances();
-            return true;
         }
-        return false;
+        return result;
     }
 
     @Override
