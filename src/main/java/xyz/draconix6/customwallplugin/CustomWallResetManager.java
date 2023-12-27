@@ -52,6 +52,7 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         this.bgInstancesIndices = bgInstances.stream().map(i -> i == null ? null : allInstances.indexOf(i)).collect(Collectors.toList());
     }
 
+    @Override
     public void refreshDisplayInstances() {
         JultiOptions options = JultiOptions.getJultiOptions();
         List<MinecraftInstance> displayInstances = this.getDisplayInstances();
