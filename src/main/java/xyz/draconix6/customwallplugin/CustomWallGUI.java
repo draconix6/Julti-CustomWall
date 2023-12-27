@@ -41,6 +41,7 @@ public class CustomWallGUI extends JFrame {
     private JCheckBox replaceLockedInstancesCheckBox;
     private JCheckBox lockVertical;
     private JCheckBox bgVertical;
+    private JCheckBox bgStretch;
     private boolean closed = false;
 
     public CustomWallGUI() {
