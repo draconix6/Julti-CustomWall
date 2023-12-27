@@ -181,6 +181,15 @@ public class CustomWallResetManager extends DynamicWallResetManager {
     }
 
     @Override
+    public boolean lockInstance(MinecraftInstance instance) {
+        boolean result = super.lockInstance(instance);
+        if (CustomWallOptions.getCustomWallOptions().replaceLocked) {
+            this.refreshDisplayInstances();
+        }
+        return result;
+    }
+
+    @Override
     public List<ActionResult> leaveInstance(MinecraftInstance selectedInstance, List<MinecraftInstance> instances) {
         List<ActionResult> results = super.leaveInstance(selectedInstance, instances);
         // refresh instances again, since background instances aren't refreshed in the base dynamic reset manager
@@ -195,10 +204,15 @@ public class CustomWallResetManager extends DynamicWallResetManager {
 
         List<MinecraftInstance> displayInstances = this.getDisplayInstances();
 
-        if (this.getLockedInstances().contains(instance)) {
-            return this.getLockedInstancePosition(instance, sceneSize);
-        } else if (!displayInstances.contains(instance)) {
-            return this.getBackgroundInstancePosition(instance, sceneSize);
+        try {
+            if (this.getLockedInstances().contains(instance)) {
+                return this.getLockedInstancePosition(instance, sceneSize);
+            } else if (!displayInstances.contains(instance)) {
+                return this.getBackgroundInstancePosition(instance, sceneSize);
+            }
+        // TODO: divide by zero error - bad fix
+        } catch (ArithmeticException e) {
+            return new Rectangle(sceneSize.width, 0, 100, 100);
         }
 
         int totalRows = 2;
@@ -242,10 +256,20 @@ public class CustomWallResetManager extends DynamicWallResetManager {
 
         if (cwOptions.currentLayout.lockVertical) {
             // Forcing 16:9 ratio for non-focus instance size
-            Dimension lockedInstanceSize = new Dimension(dwInnerSize.width, cwOptions.currentLayout.lockStretch ? (int) (dwInnerSize.width * 9.0f / 16.0f) : (dwInnerSize.height / this.getLockedInstances().size()));
+            Dimension lockedInstanceSize = new Dimension(
+                    dwInnerSize.width,
+                    !cwOptions.currentLayout.lockStretch ?
+                            (int) (dwInnerSize.width * 9.0f / 16.0f) :
+                            (dwInnerSize.height / this.getLockedInstances().size())
+            );
             return new Rectangle(lockArea.x, lockArea.y + lockedInstanceSize.height * instanceIndex, lockedInstanceSize.width, lockedInstanceSize.height);
         }
-        Dimension lockedInstanceSize = new Dimension(cwOptions.currentLayout.lockStretch ? (int) (dwInnerSize.height * 16.0f / 9.0f) : (dwInnerSize.width / this.getLockedInstances().size()), dwInnerSize.height);
+        Dimension lockedInstanceSize = new Dimension(
+                !cwOptions.currentLayout.lockStretch ?
+                        (int) (dwInnerSize.height * 16.0f / 9.0f) :
+                        (dwInnerSize.width / this.getLockedInstances().size()),
+                dwInnerSize.height
+        );
         return new Rectangle(lockArea.x + lockedInstanceSize.width * instanceIndex, lockArea.y, lockedInstanceSize.width, lockedInstanceSize.height);
     }
 
@@ -263,10 +287,20 @@ public class CustomWallResetManager extends DynamicWallResetManager {
 
         if (cwOptions.currentLayout.bgVertical) {
             // Forcing 16:9 ratio for non-focus instance size
-            Dimension bgInstanceSize = new Dimension(dwInnerSize.width, cwOptions.currentLayout.bgStretch ? (int) (dwInnerSize.width * 9.0f / 16.0f) : (dwInnerSize.height / this.getBGInstances().size()));
+            Dimension bgInstanceSize = new Dimension(
+                    dwInnerSize.width,
+                    !cwOptions.currentLayout.bgStretch ?
+                            (int) (dwInnerSize.width * 9.0f / 16.0f) :
+                            (dwInnerSize.height / this.getBGInstances().size())
+            );
             return new Rectangle(bgArea.x, bgArea.y + bgInstanceSize.height * instanceIndex, bgInstanceSize.width, bgInstanceSize.height);
         }
-        Dimension bgInstanceSize = new Dimension(cwOptions.currentLayout.bgStretch ? (int) (dwInnerSize.height * 16.0f / 9.0f) : (dwInnerSize.width / this.getBGInstances().size()), dwInnerSize.height);
+        Dimension bgInstanceSize = new Dimension(
+                !cwOptions.currentLayout.bgStretch ?
+                        (int) (dwInnerSize.height * 16.0f / 9.0f) :
+                        (dwInnerSize.width / this.getBGInstances().size()),
+                dwInnerSize.height
+        );
         return new Rectangle(bgArea.x + bgInstanceSize.width * instanceIndex, bgArea.y, bgInstanceSize.width, bgInstanceSize.height);
     }
 }
