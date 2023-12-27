@@ -181,15 +181,6 @@ public class CustomWallResetManager extends DynamicWallResetManager {
     }
 
     @Override
-    public boolean lockInstance(MinecraftInstance instance) {
-        boolean result = super.lockInstance(instance);
-        if (CustomWallOptions.getCustomWallOptions().replaceLocked) {
-            this.refreshDisplayInstances();
-        }
-        return result;
-    }
-
-    @Override
     public List<ActionResult> leaveInstance(MinecraftInstance selectedInstance, List<MinecraftInstance> instances) {
         List<ActionResult> results = super.leaveInstance(selectedInstance, instances);
         // refresh instances again, since background instances aren't refreshed in the base dynamic reset manager
