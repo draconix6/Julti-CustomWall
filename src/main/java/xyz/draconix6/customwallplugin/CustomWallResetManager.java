@@ -5,7 +5,6 @@ import xyz.duncanruns.julti.affinity.AffinityManager;
 import xyz.duncanruns.julti.instance.MinecraftInstance;
 import xyz.duncanruns.julti.management.ActiveWindowManager;
 import xyz.duncanruns.julti.management.InstanceManager;
-import xyz.duncanruns.julti.management.OBSStateManager;
 import xyz.duncanruns.julti.resetting.ActionResult;
 import xyz.duncanruns.julti.resetting.DynamicWallResetManager;
 import xyz.duncanruns.julti.util.DoAllFastUtil;
@@ -103,6 +102,93 @@ public class CustomWallResetManager extends DynamicWallResetManager {
     }
 
     @Override
+    public List<ActionResult> doWallFullReset() {
+        List<ActionResult> actionResults = new ArrayList<>();
+        if (this.isFirstReset && !(actionResults = super.doWallFullReset()).isEmpty()) {
+            this.isFirstReset = false;
+            return actionResults;
+        }
+        if (!ActiveWindowManager.isWallActive()) {
+            return actionResults;
+        }
+
+        List<ActionResult> finalActionResults = actionResults;
+        // Do special reset so that display instances don't get replaced because it will be filled with null anyway
+        DoAllFastUtil.doAllFast(this.getDisplayInstances().stream().filter(Objects::nonNull).collect(Collectors.toList()), instance -> {
+            if (this.resetNoWallUpdate(instance)) {
+                synchronized (finalActionResults) {
+                    finalActionResults.add(ActionResult.INSTANCE_RESET);
+                }
+            }
+        });
+
+        if (JultiOptions.getJultiOptions().useAffinity) {
+            AffinityManager.ping();
+        }
+        // Fill display & BG with null then refresh to ensure good order
+        Collections.fill(this.displayInstancesIndices, null);
+        Collections.fill(this.bgInstancesIndices, null);
+        this.refreshDisplayInstances();
+
+        // Return true if something has happened: instances were reset OR the display was updated
+        return actionResults;
+    }
+
+    @Override
+    public List<ActionResult> doWallFocusReset(Point mousePosition) {
+        if (!ActiveWindowManager.isWallActive()) {
+            return Collections.emptyList();
+        }
+        // Regular play instance method
+        MinecraftInstance clickedInstance = this.getHoveredWallInstance(mousePosition);
+        if (clickedInstance == null) {
+            return Collections.emptyList();
+        }
+        List<ActionResult> actionResults = new ArrayList<>(this.playInstanceFromWall(clickedInstance, false));
+
+        // Get list of instances to reset
+        List<MinecraftInstance> toReset = this.getDisplayInstances();
+        toReset.removeIf(Objects::isNull);
+        toReset.remove(clickedInstance);
+
+        // Reset all others
+        DoAllFastUtil.doAllFast(toReset, instance -> {
+            if (this.resetInstance(instance)) {
+                synchronized (actionResults) {
+                    actionResults.add(ActionResult.INSTANCE_RESET);
+                }
+            }
+        });
+
+        if (JultiOptions.getJultiOptions().useAffinity) {
+            AffinityManager.ping();
+        }
+        return actionResults;
+    }
+
+    @Override
+    public boolean resetInstance(MinecraftInstance instance, boolean bypassConditions) {
+        List<MinecraftInstance> displayInstances = this.getDisplayInstances();
+
+        if (super.resetInstance(instance, bypassConditions)) {
+            if (displayInstances.contains(instance)) {
+                this.displayInstancesIndices.set(displayInstances.indexOf(instance), null);
+            }
+            this.refreshDisplayInstances();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<ActionResult> leaveInstance(MinecraftInstance selectedInstance, List<MinecraftInstance> instances) {
+        List<ActionResult> results = super.leaveInstance(selectedInstance, instances);
+        // refresh instances again, since background instances aren't refreshed in the base dynamic reset manager
+        this.refreshDisplayInstances();
+        return results;
+    }
+
+    @Override
     public Rectangle getInstancePosition(MinecraftInstance instance, Dimension sceneSize) {
         JultiOptions jOptions = JultiOptions.getJultiOptions();
         CustomWallOptions cwOptions = CustomWallOptions.getCustomWallOptions();
@@ -154,12 +240,12 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         // Dimensions are manually defined in the custom wall layout, so sceneSize is ignored
         Dimension dwInnerSize = lockArea.getSize();
 
-        // Forcing 16:9 ratio for non-focus instance size
-        Dimension lockedInstanceSize = new Dimension((int) (dwInnerSize.height * 16.0f / 9.0f), dwInnerSize.height);
-
         if (cwOptions.currentLayout.lockVertical) {
+            // Forcing 16:9 ratio for non-focus instance size
+            Dimension lockedInstanceSize = new Dimension(dwInnerSize.width, cwOptions.currentLayout.lockStretch ? (int) (dwInnerSize.width * 9.0f / 16.0f) : (dwInnerSize.height / this.getLockedInstances().size()));
             return new Rectangle(lockArea.x, lockArea.y + lockedInstanceSize.height * instanceIndex, lockedInstanceSize.width, lockedInstanceSize.height);
         }
+        Dimension lockedInstanceSize = new Dimension(cwOptions.currentLayout.lockStretch ? (int) (dwInnerSize.height * 16.0f / 9.0f) : (dwInnerSize.width / this.getLockedInstances().size()), dwInnerSize.height);
         return new Rectangle(lockArea.x + lockedInstanceSize.width * instanceIndex, lockArea.y, lockedInstanceSize.width, lockedInstanceSize.height);
     }
 
@@ -174,12 +260,13 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         // Dimensions are manually defined in the custom wall layout, so sceneSize is ignored
         Dimension dwInnerSize = bgArea.getSize();
 
-        // Forcing 16:9 ratio for non-focus instance size
-        Dimension bgInstanceSize = new Dimension((int) (dwInnerSize.height * 16.0f / 9.0f), dwInnerSize.height);
 
         if (cwOptions.currentLayout.bgVertical) {
+            // Forcing 16:9 ratio for non-focus instance size
+            Dimension bgInstanceSize = new Dimension(dwInnerSize.width, cwOptions.currentLayout.bgStretch ? (int) (dwInnerSize.width * 9.0f / 16.0f) : (dwInnerSize.height / this.getBGInstances().size()));
             return new Rectangle(bgArea.x, bgArea.y + bgInstanceSize.height * instanceIndex, bgInstanceSize.width, bgInstanceSize.height);
         }
+        Dimension bgInstanceSize = new Dimension(cwOptions.currentLayout.bgStretch ? (int) (dwInnerSize.height * 16.0f / 9.0f) : (dwInnerSize.width / this.getBGInstances().size()), dwInnerSize.height);
         return new Rectangle(bgArea.x + bgInstanceSize.width * instanceIndex, bgArea.y, bgInstanceSize.width, bgInstanceSize.height);
     }
 }
