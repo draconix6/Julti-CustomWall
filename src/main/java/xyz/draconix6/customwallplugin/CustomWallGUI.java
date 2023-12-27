@@ -68,6 +68,7 @@ public class CustomWallGUI extends JFrame {
             this.layoutBox.addItem(layout);
             this.layoutBox.setSelectedItem(layout);
 
+            this.updateForm();
             this.save();
         });
 
@@ -82,6 +83,7 @@ public class CustomWallGUI extends JFrame {
             options.currentLayout = options.layouts.get(0);
             this.layoutBox.setSelectedItem(options.currentLayout);
 
+            this.updateForm();
             this.save();
         });
 
@@ -92,6 +94,7 @@ public class CustomWallGUI extends JFrame {
 
             options.currentLayout = (CustomWallLayout) (this.layoutBox.getSelectedItem());
 
+            this.updateForm();
             this.save();
         });
 
@@ -150,7 +153,6 @@ public class CustomWallGUI extends JFrame {
 
     private void save() {
         CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
-        this.updateForm();
 
         try {
             options.currentLayout.focusGridArea = new Rectangle(
@@ -215,23 +217,20 @@ public class CustomWallGUI extends JFrame {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(5, 1, new Insets(5, 5, 5, 5), -1, -1));
         layoutSelectPanel = new JPanel();
-        layoutSelectPanel.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
+        layoutSelectPanel.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(layoutSelectPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         newButton = new JButton();
         newButton.setText("New");
         layoutSelectPanel.add(newButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, 1, null, new Dimension(50, 30), null, 0, false));
         deleteButton = new JButton();
         deleteButton.setText("Delete");
-        layoutSelectPanel.add(deleteButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, 1, null, new Dimension(50, 30), null, 0, false));
+        layoutSelectPanel.add(deleteButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, 1, null, new Dimension(50, 30), null, 0, false));
         layoutBox = new JComboBox();
         layoutBox.setEditable(false);
         layoutBox.setEnabled(true);
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         layoutBox.setModel(defaultComboBoxModel1);
         layoutSelectPanel.add(layoutBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JButton button1 = new JButton();
-        button1.setText("Rename");
-        layoutSelectPanel.add(button1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, 1, null, new Dimension(50, 30), null, 0, false));
         final JSeparator separator1 = new JSeparator();
         mainPanel.add(separator1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         layoutEditPanel = new JPanel();
