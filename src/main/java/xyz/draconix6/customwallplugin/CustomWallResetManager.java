@@ -35,9 +35,7 @@ public class CustomWallResetManager extends DynamicWallResetManager {
 
     private List<MinecraftInstance> getDisplayInstances() {
         List<MinecraftInstance> allInstances = InstanceManager.getInstanceManager().getInstances();
-        List<MinecraftInstance> list = this.displayInstancesIndices.stream().map(i -> i == null || i >= allInstances.size() ? null : allInstances.get(i)).collect(Collectors.toList());
-//        Julti.log(Level.INFO, Integer.toString(list.size()));
-        return list;
+        return this.displayInstancesIndices.stream().map(i -> i == null || i >= allInstances.size() ? null : allInstances.get(i)).collect(Collectors.toList());
     }
 
     private void saveDisplayInstances(List<MinecraftInstance> displayInstances) {
@@ -105,10 +103,54 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         this.saveBGInstances(instancePool);
     }
 
+    // mostly same - just forcing adding left instance to BG instance indices
+    @Override
+    public List<ActionResult> doReset() {
+        List<MinecraftInstance> instances = InstanceManager.getInstanceManager().getInstances();
+        // Return if no instances
+        if (instances.size() == 0) {
+            return Collections.emptyList();
+        }
+
+        // Get selected instance, return if no selected instance
+        MinecraftInstance selectedInstance = InstanceManager.getInstanceManager().getSelectedInstance();
+        if (selectedInstance == null) {
+            return Collections.emptyList();
+        }
+
+        // if there is only a single instance, reset it and return.
+        if (instances.size() == 1) {
+            selectedInstance.reset();
+            return Collections.singletonList(ActionResult.INSTANCE_RESET);
+        }
+
+        // Only place leaveInstance is used, but it is a big method
+        List<ActionResult> out = this.leaveInstance(selectedInstance, instances);
+        this.bgInstancesIndices.add(instances.indexOf(selectedInstance));
+
+        super.doReset();
+
+        return out;
+    }
+
+
+    // refresh display instances so BG instances are populated correctly
+    @Override
+    public List<ActionResult> doWallSingleReset(Point mousePosition) {
+        List<ActionResult> results = super.doWallSingleReset(mousePosition);
+        this.refreshDisplayInstances();
+        return results;
+    }
+
+    // TODO: almost the same as DynamicWallResetManager - should be a better way to do this
+    // calling super doesn't quite work - locked instances are reset otherwise
     @Override
     public List<ActionResult> doWallFullReset() {
         List<ActionResult> actionResults = new ArrayList<>();
-        this.isFirstReset = false; // since super will lead to dynamicwallresetmanager which is bad
+        if (this.isFirstReset && !(actionResults = super.doWallFullReset()).isEmpty()) {
+            this.isFirstReset = false;
+            return actionResults;
+        }
         if (!ActiveWindowManager.isWallActive()) {
             return actionResults;
         }
@@ -165,36 +207,36 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         return actionResults;
     }
 
-//    @Override
-//    public boolean resetInstance(MinecraftInstance instance, boolean bypassConditions) {
-//        List<MinecraftInstance> displayInstances = this.getDisplayInstances();
-//
-//
-//        if (super.resetInstance(instance, bypassConditions)) {
-//            if (displayInstances.contains(instance)) {
-//                this.displayInstancesIndices.set(displayInstances.indexOf(instance), null);
-//            }
-//            this.refreshDisplayInstances();
-//            return true;
-//        }
-//        return false;
-//    }
-
     @Override
-    public boolean lockInstance(MinecraftInstance instance) {
-        boolean result = super.lockInstance(instance);
-        if (CustomWallOptions.getCustomWallOptions().replaceLocked) {
+    public boolean resetInstance(MinecraftInstance instance, boolean bypassConditions) {
+        List<MinecraftInstance> displayInstances = this.getDisplayInstances();
+
+
+        if (super.resetInstance(instance, bypassConditions)) {
+            if (displayInstances.contains(instance)) {
+                this.displayInstancesIndices.set(displayInstances.indexOf(instance), null);
+            }
             this.refreshDisplayInstances();
+            return true;
         }
-        return result;
+        return false;
     }
 
+    // TODO: almost identical to DynamicWallResetManager - has to be a better way
     @Override
-    public List<ActionResult> leaveInstance(MinecraftInstance selectedInstance, List<MinecraftInstance> instances) {
-        List<ActionResult> results = super.leaveInstance(selectedInstance, instances);
-        // refresh instances again, since background instances aren't refreshed in the base dynamic reset manager
-        this.refreshDisplayInstances();
-        return results;
+    public boolean lockInstance(MinecraftInstance instance) {
+        // If super.lockInstance is true then it actually got locked and checked to unsquish
+        if (super.lockInstance(instance)) {
+            List<MinecraftInstance> displayInstances = this.getDisplayInstances();
+            if (Collections.replaceAll(displayInstances, instance, null)) {
+                this.saveDisplayInstances(displayInstances);
+            }
+            if (JultiOptions.getJultiOptions().dwReplaceLocked) {
+                this.refreshDisplayInstances();
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
