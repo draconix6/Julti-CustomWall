@@ -126,9 +126,8 @@ public class CustomWallResetManager extends DynamicWallResetManager {
 
         // Only place leaveInstance is used, but it is a big method
         List<ActionResult> out = this.leaveInstance(selectedInstance, instances);
-        this.bgInstancesIndices.add(instances.indexOf(selectedInstance));
 
-        super.doReset();
+        this.bgInstancesIndices.add(instances.indexOf(selectedInstance));
 
         return out;
     }
