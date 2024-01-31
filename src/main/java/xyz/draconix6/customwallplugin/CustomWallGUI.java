@@ -2,6 +2,8 @@ package xyz.draconix6.customwallplugin;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import org.apache.logging.log4j.Level;
+import xyz.duncanruns.julti.Julti;
 import xyz.duncanruns.julti.gui.JultiGUI;
 
 import javax.swing.*;
@@ -38,11 +40,12 @@ public class CustomWallGUI extends JFrame {
     private JTextField bgYField;
     private JTextField bgWidthField;
     private JTextField bgHeightField;
-    private JCheckBox replaceLockedInstancesCheckBox;
     private JCheckBox lockVertical;
     private JCheckBox bgVertical;
     private JCheckBox bgStretch;
     private JCheckBox lockStretch;
+    private JTextField nameField;
+    private JLabel nameLabel;
     private boolean closed = false;
 
     public CustomWallGUI() {
@@ -56,12 +59,22 @@ public class CustomWallGUI extends JFrame {
             }
         });
 
+        this.populateLayoutBox();
+        this.updateForm();
+
+        this.revalidate();
+        this.setMinimumSize(new Dimension(300, 140));
+        this.pack();
+        this.setResizable(false);
+        this.setVisible(true);
+
         this.newButton.addActionListener(e -> {
             CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
 
-            CustomWallLayout layout = new CustomWallLayout("Layout " + Integer.toString(options.layouts.size() + 1));
+            CustomWallLayout layout = new CustomWallLayout("New Layout");
             options.layouts.add(layout);
             options.currentLayout = layout;
+//            Julti.log(Level.INFO, options.currentLayout.name);
 
             this.layoutBox.addItem(layout);
             this.layoutBox.setSelectedItem(layout);
@@ -92,19 +105,11 @@ public class CustomWallGUI extends JFrame {
 
             options.currentLayout = (CustomWallLayout) (this.layoutBox.getSelectedItem());
 
-            this.updateForm();
-            this.save();
+            if (options.currentLayout != null) {
+                this.updateForm();
+                this.save();
+            }
         });
-
-        this.populateLayoutBox();
-        this.layoutBox.setSelectedItem(CustomWallOptions.getCustomWallOptions().currentLayout);
-        this.updateForm();
-
-        this.revalidate();
-        this.setMinimumSize(new Dimension(300, 140));
-        this.pack();
-        this.setResizable(false);
-        this.setVisible(true);
     }
 
     public static CustomWallGUI open(Point initialLocation) {
@@ -120,10 +125,16 @@ public class CustomWallGUI extends JFrame {
     }
 
     private void populateLayoutBox() {
+//        this.layoutBox.removeAllItems();
+
         CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
         for (CustomWallLayout layout : options.layouts) {
             this.layoutBox.addItem(layout);
         }
+
+//        Julti.log(Level.INFO, Boolean.toString(options.currentLayout.equals(this.layoutBox.getItemAt(1))));
+//        Julti.log(Level.INFO, Integer.toString(this.layoutBox.getItemCount()));
+        this.layoutBox.setSelectedItem(options.currentLayout);
     }
 
     private void updateForm() {
@@ -147,12 +158,25 @@ public class CustomWallGUI extends JFrame {
         this.bgHeightField.setText(Integer.toString(layout.bgArea.height));
         this.bgVertical.setSelected(layout.bgVertical);
         this.bgStretch.setSelected(layout.bgStretch);
+
+        this.nameField.setText(layout.name);
+
+        this.layoutBox.setSelectedItem(layout);
+        this.layoutBox.repaint();
     }
 
-    private void save() {
+    private synchronized void save() {
         CustomWallOptions options = CustomWallOptions.getCustomWallOptions();
 
         try {
+            if (options.layouts.stream().anyMatch(l -> l.name.equals(this.nameField.getText()))) { // need to check if duplicate name exists maybe
+                JOptionPane.showMessageDialog(JultiGUI.getPluginsGUI(), "Layout name already exists. Please choose a new name.", "Custom Wall - Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            else {
+            options.currentLayout.name = this.nameField.getText();
+            }
+
             options.currentLayout.focusGridArea = new Rectangle(
                     Integer.parseInt(this.focusXField.getText()),
                     Integer.parseInt(this.focusYField.getText()),
@@ -184,6 +208,8 @@ public class CustomWallGUI extends JFrame {
             JOptionPane.showMessageDialog(JultiGUI.getPluginsGUI(), "Please input a valid layout name.", "Custom Wall - Error", JOptionPane.ERROR_MESSAGE);
         }
 
+        this.updateForm();
+//        this.populateLayoutBox();
         CustomWallOptions.save();
     }
 
@@ -231,7 +257,7 @@ public class CustomWallGUI extends JFrame {
         final JSeparator separator1 = new JSeparator();
         mainPanel.add(separator1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         layoutEditPanel = new JPanel();
-        layoutEditPanel.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
+        layoutEditPanel.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(layoutEditPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         focusGridPanel = new JPanel();
         focusGridPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -265,7 +291,7 @@ public class CustomWallGUI extends JFrame {
         panel1.add(focusHeightField, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(30, -1), null, 0, false));
         lockAreaPanel = new JPanel();
         lockAreaPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
-        layoutEditPanel.add(lockAreaPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        layoutEditPanel.add(lockAreaPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 8, new Insets(0, 0, 0, 0), -1, -1));
         lockAreaPanel.add(panel2, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -303,7 +329,7 @@ public class CustomWallGUI extends JFrame {
         backgroundAreaPanel = new JPanel();
         backgroundAreaPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         backgroundAreaPanel.setEnabled(true);
-        layoutEditPanel.add(backgroundAreaPanel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        layoutEditPanel.add(backgroundAreaPanel, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 8, new Insets(0, 0, 0, 0), -1, -1));
         backgroundAreaPanel.add(panel3, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -339,24 +365,30 @@ public class CustomWallGUI extends JFrame {
         backgroundAreaPanel.add(bgStretch, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label13 = new JLabel();
         label13.setText("Lock Area");
-        layoutEditPanel.add(label13, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        layoutEditPanel.add(label13, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label14 = new JLabel();
         label14.setText("Focus Grid Area");
         layoutEditPanel.add(label14, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label15 = new JLabel();
         label15.setText("Background Instance Area");
-        layoutEditPanel.add(label15, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        layoutEditPanel.add(label15, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator2 = new JSeparator();
-        mainPanel.add(separator2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        layoutEditPanel.add(separator2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JSeparator separator3 = new JSeparator();
+        layoutEditPanel.add(separator3, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JSeparator separator4 = new JSeparator();
+        mainPanel.add(separator4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         savePanel = new JPanel();
-        savePanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        savePanel.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(savePanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         saveButton = new JButton();
         saveButton.setText("Save");
-        savePanel.add(saveButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        replaceLockedInstancesCheckBox = new JCheckBox();
-        replaceLockedInstancesCheckBox.setText("Replace Locked Instances");
-        savePanel.add(replaceLockedInstancesCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        savePanel.add(saveButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        nameField = new JTextField();
+        savePanel.add(nameField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        nameLabel = new JLabel();
+        nameLabel.setText("Layout Name");
+        savePanel.add(nameLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         label1.setLabelFor(focusXField);
         label2.setLabelFor(focusYField);
         label3.setLabelFor(focusWidthField);
@@ -369,6 +401,7 @@ public class CustomWallGUI extends JFrame {
         label10.setLabelFor(bgYField);
         label11.setLabelFor(bgWidthField);
         label12.setLabelFor(bgHeightField);
+        nameLabel.setLabelFor(nameField);
     }
 
     /**

@@ -1,6 +1,10 @@
 package xyz.draconix6.customwallplugin;
 
+import org.apache.logging.log4j.Level;
+import xyz.duncanruns.julti.Julti;
+
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * @author draconix6
@@ -52,5 +56,12 @@ public class CustomWallLayout {
     @Override
     public String toString() {
         return this.name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof CustomWallLayout)) return false;
+        CustomWallLayout that = (CustomWallLayout) obj;
+        return that.name.equals(this.name);
     }
 }
