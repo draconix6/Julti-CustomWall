@@ -4,8 +4,6 @@ import org.apache.logging.log4j.Level;
 import xyz.duncanruns.julti.Julti;
 import xyz.duncanruns.julti.plugin.PluginEvents;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  * @author DuncanRuns
  * @author draconix6

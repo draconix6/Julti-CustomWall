@@ -2,17 +2,17 @@ package xyz.draconix6.customwallplugin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-
 import org.apache.logging.log4j.Level;
 import xyz.duncanruns.julti.Julti;
 import xyz.duncanruns.julti.JultiOptions;
 import xyz.duncanruns.julti.util.ExceptionUtil;
 import xyz.duncanruns.julti.util.FileUtil;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author DuncanRuns
@@ -26,7 +26,6 @@ public class CustomWallOptions {
 
     public List<CustomWallLayout> layouts = new ArrayList<>();
     public CustomWallLayout currentLayout = null;
-    public boolean replaceLocked = true;
 
     public static CustomWallOptions getCustomWallOptions() {
         return instance;

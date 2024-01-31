@@ -1,7 +1,5 @@
 package xyz.draconix6.customwallplugin;
 
-import org.apache.logging.log4j.Level;
-import xyz.duncanruns.julti.Julti;
 import xyz.duncanruns.julti.JultiOptions;
 import xyz.duncanruns.julti.affinity.AffinityManager;
 import xyz.duncanruns.julti.instance.MinecraftInstance;
@@ -263,20 +261,21 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         return false;
     }
 
-//    @Override
-//    public void notifyPreviewLoaded(MinecraftInstance instance) {
-//        List<MinecraftInstance> displayInstances = this.getDisplayInstances();
-//        if (displayInstances.contains(instance)) {
-//            return;
-//        }
-//        for (MinecraftInstance replaceCandidateInstance : displayInstances) {
-//            if (replaceCandidateInstance != null && replaceCandidateInstance.shouldCoverWithDirt()) {
-//                Collections.replaceAll(displayInstances, replaceCandidateInstance, instance);
-//                this.saveDisplayInstances(displayInstances);
-//                return;
-//            }
-//        }
-//    }
+    @Override
+    public void notifyPreviewLoaded(MinecraftInstance instance) {
+        List<MinecraftInstance> displayInstances = this.getDisplayInstances();
+        if (displayInstances.contains(instance)) {
+            return;
+        }
+        for (MinecraftInstance replaceCandidateInstance : displayInstances) {
+            if (replaceCandidateInstance != null && replaceCandidateInstance.shouldCoverWithDirt()) {
+                Collections.replaceAll(displayInstances, replaceCandidateInstance, instance);
+                this.saveDisplayInstances(displayInstances);
+                this.refreshBGInstances();
+                return;
+            }
+        }
+    }
 
     @Override
     public Rectangle getInstancePosition(MinecraftInstance instance, Dimension sceneSize) {

@@ -2,8 +2,6 @@ package xyz.draconix6.customwallplugin;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import org.apache.logging.log4j.Level;
-import xyz.duncanruns.julti.Julti;
 import xyz.duncanruns.julti.gui.JultiGUI;
 
 import javax.swing.*;
@@ -180,7 +178,6 @@ public class CustomWallGUI extends JFrame {
             options.currentLayout.bgVertical = this.bgVertical.isSelected();
             options.currentLayout.bgStretch = this.bgStretch.isSelected();
 
-            options.replaceLocked = this.replaceLockedInstancesCheckBox.isSelected();
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(JultiGUI.getPluginsGUI(), "Please only use whole numbers.", "Custom Wall - Error", JOptionPane.ERROR_MESSAGE);
         } catch (NullPointerException e) {
