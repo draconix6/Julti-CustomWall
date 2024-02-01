@@ -16,3 +16,5 @@ The best example of these is the classic Boyenn moving layout for [MultiResetWal
 The "Replace Locked Instances" checkbox behaves the same as it does with Julti's default dynamic wall setting - if enabled, instances that are locked on the focus grid will be replaced with a background instance immediately.
 
 After clicking Save, go to the main Julti options. In the Resetting section, change Style to Custom Wall.
+
+Credits to Priffin for the idea.
