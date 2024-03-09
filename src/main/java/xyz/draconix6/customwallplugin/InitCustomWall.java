@@ -19,5 +19,9 @@ public class InitCustomWall {
             // This gets run when Julti is shutting down
             Julti.log(Level.INFO, "Custom Wall plugin shutting down...");
         });
+
+        PluginEvents.RunnableEventType.START_TICK.register(() -> {
+            LayerStateOutput.getLayerStateOutput().tryOutputLayers();
+        });
     }
 }

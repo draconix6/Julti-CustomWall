@@ -1,10 +1,6 @@
 package xyz.draconix6.customwallplugin;
 
-import org.apache.logging.log4j.Level;
-import xyz.duncanruns.julti.Julti;
-
 import java.awt.*;
-import java.util.Objects;
 
 /**
  * @author draconix6
@@ -18,6 +14,7 @@ public class CustomWallLayout {
     public boolean lockStretch;
     public boolean bgVertical;
     public boolean bgStretch;
+    public String[] layers;
 
     public CustomWallLayout() {
         this.name = "Layout";
@@ -28,6 +25,7 @@ public class CustomWallLayout {
         this.lockStretch = false;
         this.bgVertical = false;
         this.bgStretch = false;
+        this.layers = new String[]{"Focus", "Lock", "BG"}; // 0 = focus, 1 = lock, 2 = bg. pos 1 = top layer
     }
 
     public CustomWallLayout(String name) {
@@ -39,18 +37,8 @@ public class CustomWallLayout {
         this.lockStretch = false;
         this.bgVertical = false;
         this.bgStretch = false;
-    }
-
-    // probably useless, whoops
-    public CustomWallLayout(String name, Rectangle focusGridArea, Rectangle lockArea, Rectangle bgArea, boolean lockVertical, boolean bgVertical) {
-        this.name = name;
-        this.focusGridArea = focusGridArea;
-        this.lockArea = lockArea;
-        this.bgArea = bgArea;
-        this.lockVertical = lockVertical;
-        this.lockStretch = false;
-        this.bgVertical = bgVertical;
-        this.bgStretch = false;
+        // TODO: enumerate?
+        this.layers = new String[]{"Focus", "Lock", "BG"}; // 0 = focus, 1 = lock, 2 = bg. pos 1 = top layer
     }
 
     @Override

@@ -277,6 +277,15 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         }
     }
 
+    public String getInstanceLayer(MinecraftInstance instance) {
+        if (this.getLockedInstances().contains(instance)) {
+            return "Lock";
+        } else if (this.getDisplayInstances().contains(instance)) {
+            return "Focus";
+        }
+        return "BG";
+    }
+
     @Override
     public Rectangle getInstancePosition(MinecraftInstance instance, Dimension sceneSize) {
         JultiOptions jOptions = JultiOptions.getJultiOptions();

@@ -8,6 +8,7 @@ import xyz.duncanruns.julti.JultiOptions;
 import xyz.duncanruns.julti.util.ExceptionUtil;
 import xyz.duncanruns.julti.util.FileUtil;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +30,14 @@ public class CustomWallOptions {
 
     public static CustomWallOptions getCustomWallOptions() {
         return instance;
+    }
+
+    public static void openConfigFile() {
+        try {
+            Desktop.getDesktop().edit(SAVE_PATH.toFile());
+        } catch (IOException err) {
+            Julti.log(Level.INFO, "Couldn't open layer config file: " + err.getMessage());
+        }
     }
 
     public static void load() {
