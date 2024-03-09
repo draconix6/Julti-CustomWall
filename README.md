@@ -15,4 +15,10 @@ The best example of these is the classic Boyenn moving layout for [MultiResetWal
 
 After clicking Save, go to the main Julti options. In the Resetting section, change Style to Custom Wall.
 
+If you would like to have each group of instances on their own "layer" in OBS (i.e. focus grid always overlaps locks, etc.) this will require additional setup:
+
+Click "Customize Layers" in the Custom Wall configuration, then **close Julti**. Reorder the items in the "layers" parameter, then save & exit the file.
+
+In OBS, go to Tools > Scripts, and add a new script. Navigate to %UserProfile%/.Julti, and add custom-wall-obs-link.lua. Then reopen Julti.
+
 Credits to Priffin for the idea.
