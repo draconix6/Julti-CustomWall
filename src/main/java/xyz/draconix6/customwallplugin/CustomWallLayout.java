@@ -30,13 +30,13 @@ public class CustomWallLayout {
 
     public CustomWallLayout(String name) {
         this.name = name;
-        this.focusGridArea = new Rectangle(0, 0, 1920, 900);
-        this.lockArea = new Rectangle(0, 900, 1920, 180);
-        this.bgArea = new Rectangle(1920, 0, 100, 100);
+        this.focusGridArea = new Rectangle(0, 0, 1800, 700);
+        this.lockArea = new Rectangle(0, 700, 1800, 380);
+        this.bgArea = new Rectangle(1800, 0, 120, 1080);
         this.lockVertical = false;
-        this.lockStretch = false;
-        this.bgVertical = false;
-        this.bgStretch = false;
+        this.lockStretch = true;
+        this.bgVertical = true;
+        this.bgStretch = true;
         // TODO: enumerate?
         this.layers = new String[]{"Focus", "Lock", "BG"}; // 0 = focus, 1 = lock, 2 = bg. pos 1 = top layer
     }
