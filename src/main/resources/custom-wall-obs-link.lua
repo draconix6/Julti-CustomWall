@@ -277,7 +277,7 @@ function loop()
     local scene = get_scene("Julti")
     local layer_order = split_string(layer_out, ",")
     for k, inst in pairs(layer_order) do
-        obs.script_log(200, inst)
+--         obs.script_log(200, inst)
         bring_to_top(obs.obs_scene_find_source(scene, "Instance " .. inst))
     end
     bring_to_top(obs.obs_scene_find_source(get_scene("Julti"), "Wall On Top"))
