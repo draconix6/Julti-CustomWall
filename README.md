@@ -2,7 +2,7 @@ Plugin for [Julti](https://github.com/duncanruns/julti) which allows for custom 
 Credits to [Resetti's](https://github.com/tesselslate/resetti) configuration.
 
 Usage:
-Download the latest release, and place it in %UserProfile%/.Julti/plugins. Restart Julti if you had it open.
+Download the .jar file from the latest release, and place it in %UserProfile%/.Julti/plugins. Restart Julti if you had it open.
 In Julti, go to Plugins > Open Custom Wall.
 Here, you can modify the X, Y, width & height of the above areas. You can create and remove separate layouts if desired.
 
@@ -17,8 +17,10 @@ After clicking Save, go to the main Julti options. In the Resetting section, cha
 
 If you would like to have each group of instances on their own "layer" in OBS (i.e. focus grid always overlaps locks, etc.) this will require additional setup:
 
+Check the latest release, and download "custom-wall-obs-link.lua". Place this file in `%UserProfile%/.Julti`.
+
 Click "Customize Layers" in the Custom Wall configuration, then **close Julti**. Reorder the items in the "layers" parameter, then save & exit the file.
 
-In OBS, go to Tools > Scripts, and add a new script. Navigate to %UserProfile%/.Julti, and add custom-wall-obs-link.lua. Then reopen Julti.
+In OBS, go to Tools > Scripts, and add a new script. Navigate to `%UserProfile%/.Julti`, and add custom-wall-obs-link.lua. Then reopen Julti.
 
 Credits to Priffin for the idea.
