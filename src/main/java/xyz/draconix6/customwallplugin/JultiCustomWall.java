@@ -39,11 +39,11 @@ public class JultiCustomWall implements PluginInitializer {
         CustomWallOptions.load();
         ResetHelper.registerResetStyle("Custom Wall", CustomWallResetManager::getCustomWallResetManager);
         InitCustomWall.init();
-        try {
-            copyResourceToFile("/custom-wall-obs-link.lua", JultiOptions.getJultiDir().resolve("custom-wall-obs-link.lua"));
-        } catch (Exception e) {
-            Julti.log(Level.WARN, "Couldn't copy custom wall OBS script: " + e.getMessage());
-        }
+//        try {
+//            copyResourceToFile("/custom-wall-obs-link.lua", JultiOptions.getJultiDir().resolve("custom-wall-obs-link.lua"));
+//        } catch (Exception e) {
+//            Julti.log(Level.WARN, "Couldn't copy custom wall OBS script: " + e.getMessage());
+//        }
         Julti.log(Level.INFO, "Custom Wall Plugin Initialized - using " + CustomWallOptions.getCustomWallOptions().currentLayout.name);
     }
 
