@@ -320,20 +320,15 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         CustomWallOptions cw = CustomWallOptions.getCustomWallOptions();
         String[] layers = cw.currentLayout.layers;
 
-        for (String layer : layers) {
+        for (int i = layers.length - 1; i >= 0; i--) {
             for (MinecraftInstance instance : InstanceManager.getInstanceManager().getInstances()) {
-                if (!layer.equals(this.getInstanceLayer(instance))) continue;
+                if (!layers[i].equals(this.getInstanceLayer(instance))) continue;
                 if (this.getInstancePosition(instance, sceneSize).contains(posOnScene)) {
                     return instance;
                 }
             }
         }
 
-        for (MinecraftInstance instance : InstanceManager.getInstanceManager().getInstances()) {
-            if (this.getInstancePosition(instance, sceneSize).contains(posOnScene)) {
-                return instance;
-            }
-        }
         return null;
     }
 

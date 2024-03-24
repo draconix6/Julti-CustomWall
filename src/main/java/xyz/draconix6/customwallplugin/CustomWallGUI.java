@@ -99,7 +99,8 @@ public class CustomWallGUI extends JFrame {
         this.saveButton.addActionListener(e -> this.save());
 
         this.openLayerPanel.addActionListener(e -> {
-            CustomWallOptions.openConfigFile();
+            CustomWallLayerGUI.open(new Point(this.getX() + this.getWidth(), this.getY()));
+//            CustomWallOptions.openConfigFile();
         });
 
         this.layoutBox.addActionListener(e -> {
@@ -397,7 +398,7 @@ public class CustomWallGUI extends JFrame {
         nameLabel.setText("Layout Name");
         savePanel.add(nameLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         openLayerPanel = new JButton();
-        openLayerPanel.setEnabled(false);
+        openLayerPanel.setEnabled(true);
         openLayerPanel.setText("Customize Layers...");
         mainPanel.add(openLayerPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         label1.setLabelFor(focusXField);
