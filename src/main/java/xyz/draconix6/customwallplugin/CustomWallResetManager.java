@@ -5,10 +5,12 @@ import xyz.duncanruns.julti.affinity.AffinityManager;
 import xyz.duncanruns.julti.instance.MinecraftInstance;
 import xyz.duncanruns.julti.management.ActiveWindowManager;
 import xyz.duncanruns.julti.management.InstanceManager;
+import xyz.duncanruns.julti.management.OBSStateManager;
 import xyz.duncanruns.julti.resetting.ActionResult;
 import xyz.duncanruns.julti.resetting.DynamicWallResetManager;
 import xyz.duncanruns.julti.util.DoAllFastUtil;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -231,6 +233,22 @@ public class CustomWallResetManager extends DynamicWallResetManager {
     }
 
     @Override
+    public List<ActionResult> doWallLock(Point mousePosition) {
+        if (!ActiveWindowManager.isWallActive()) {
+            return Collections.emptyList();
+        }
+        MinecraftInstance clickedInstance = this.getHoveredWallInstance(mousePosition);
+        if (clickedInstance == null) {
+            return Collections.emptyList();
+        }
+        boolean out = this.lockInstance(clickedInstance);
+        if (JultiOptions.getJultiOptions().useAffinity) {
+            AffinityManager.ping();
+        }
+        return out ? Collections.singletonList(ActionResult.INSTANCE_LOCKED) : Collections.emptyList();
+    }
+
+    @Override
     public boolean resetInstance(MinecraftInstance instance, boolean bypassConditions) {
         List<MinecraftInstance> displayInstances = this.getDisplayInstances();
 
@@ -275,6 +293,48 @@ public class CustomWallResetManager extends DynamicWallResetManager {
                 return;
             }
         }
+    }
+
+    @Nullable
+    protected MinecraftInstance getHoveredWallInstance(Point mousePosition) {
+        JultiOptions options = JultiOptions.getJultiOptions();
+        Point point = new Point(mousePosition.x, mousePosition.y);
+        Rectangle bounds = ActiveWindowManager.getActiveWindowBounds();
+        Dimension sceneSize = OBSStateManager.getOBSStateManager().getOBSSceneSize();
+        if (sceneSize == null) {
+            sceneSize = new Dimension(options.playingWindowSize[0], options.playingWindowSize[1]);
+        }
+        if (bounds.width == 0) {
+            bounds.width = 1920;
+        }
+        if (bounds.height == 0) {
+            bounds.height = 1080;
+        }
+        point.translate(-bounds.x, -bounds.y);
+        Point posOnScene = new Point(point);
+        if (!sceneSize.equals(bounds.getSize())) {
+            posOnScene.x = posOnScene.x * sceneSize.width / bounds.width;
+            posOnScene.y = posOnScene.y * sceneSize.height / bounds.height;
+        }
+
+        CustomWallOptions cw = CustomWallOptions.getCustomWallOptions();
+        String[] layers = cw.currentLayout.layers;
+
+        for (String layer : layers) {
+            for (MinecraftInstance instance : InstanceManager.getInstanceManager().getInstances()) {
+                if (!layer.equals(this.getInstanceLayer(instance))) continue;
+                if (this.getInstancePosition(instance, sceneSize).contains(posOnScene)) {
+                    return instance;
+                }
+            }
+        }
+
+        for (MinecraftInstance instance : InstanceManager.getInstanceManager().getInstances()) {
+            if (this.getInstancePosition(instance, sceneSize).contains(posOnScene)) {
+                return instance;
+            }
+        }
+        return null;
     }
 
     public String getInstanceLayer(MinecraftInstance instance) {
