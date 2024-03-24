@@ -19,8 +19,8 @@ If you would like to have each group of instances on their own "layer" in OBS (i
 
 Check the latest release, and download "custom-wall-obs-link.lua". Place this file in `%UserProfile%/.Julti`.
 
-Click "Customize Layers" in the Custom Wall configuration, then **close Julti**. Reorder the items in the "layers" parameter, then save & exit the file.
+Click "Customize Layers" in the Custom Wall configuration, then reorder the items in the "layers" parameter as you desire. Click Save on the Layers panel, then close it and press Save on the Custom Wall configuration window as well.
 
-In OBS, go to Tools > Scripts, and add a new script. Navigate to `%UserProfile%/.Julti`, and add custom-wall-obs-link.lua. Then reopen Julti.
+In OBS, go to Tools > Scripts, and add a new script. Navigate to `%UserProfile%/.Julti`, and add custom-wall-obs-link.lua.
 
 Credits to Priffin for the idea.
