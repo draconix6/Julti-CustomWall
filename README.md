@@ -2,7 +2,7 @@ Plugin for [Julti](https://github.com/duncanruns/julti) which allows for custom 
 Credits to [Resetti's](https://github.com/tesselslate/resetti) configuration.
 
 Usage:
-Download the .jar file from the latest release, and place it in %UserProfile%/.Julti/plugins. Restart Julti if you had it open.
+[Download the .jar file from the latest release](https://github.com/draconix6/Julti-CustomWall/releases/latest), and place it in %UserProfile%/.Julti/plugins. Restart Julti if you had it open.
 In Julti, go to Plugins > Open Custom Wall.
 Here, you can modify the X, Y, width & height of the above areas. You can create and remove separate layouts if desired.
 
