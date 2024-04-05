@@ -12,10 +12,8 @@ import xyz.duncanruns.julti.util.DoAllFastUtil;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -295,41 +293,23 @@ public class CustomWallResetManager extends DynamicWallResetManager {
         }
     }
 
-    @Nullable
-    protected MinecraftInstance getHoveredWallInstance(Point mousePosition) {
-        JultiOptions options = JultiOptions.getJultiOptions();
-        Point point = new Point(mousePosition.x, mousePosition.y);
-        Rectangle bounds = ActiveWindowManager.getActiveWindowBounds();
-        Dimension sceneSize = OBSStateManager.getOBSStateManager().getOBSSceneSize();
-        if (sceneSize == null) {
-            sceneSize = new Dimension(options.playingWindowSize[0], options.playingWindowSize[1]);
-        }
-        if (bounds.width == 0) {
-            bounds.width = 1920;
-        }
-        if (bounds.height == 0) {
-            bounds.height = 1080;
-        }
-        point.translate(-bounds.x, -bounds.y);
-        Point posOnScene = new Point(point);
-        if (!sceneSize.equals(bounds.getSize())) {
-            posOnScene.x = posOnScene.x * sceneSize.width / bounds.width;
-            posOnScene.y = posOnScene.y * sceneSize.height / bounds.height;
-        }
-
-        CustomWallOptions cw = CustomWallOptions.getCustomWallOptions();
-        String[] layers = cw.currentLayout.layers;
+    @Override
+    public List<Integer> getInstanceZOrder() {
+        List<MinecraftInstance> instances = InstanceManager.getInstanceManager().getInstances();
+        List<Integer> out = new ArrayList<>(instances.size());
+        String[] layers = CustomWallOptions.getCustomWallOptions().currentLayout.layers;
 
         for (int i = layers.length - 1; i >= 0; i--) {
-            for (MinecraftInstance instance : InstanceManager.getInstanceManager().getInstances()) {
-                if (!layers[i].equals(this.getInstanceLayer(instance))) continue;
-                if (this.getInstancePosition(instance, sceneSize).contains(posOnScene)) {
-                    return instance;
+            for (MinecraftInstance instance : instances) {
+                if (getInstanceLayer(instance).equals(layers[i])) {
+                    out.add(instances.indexOf(instance));
                 }
             }
         }
 
-        return null;
+        assert instances.size() == out.size();
+
+        return out;
     }
 
     public String getInstanceLayer(MinecraftInstance instance) {
