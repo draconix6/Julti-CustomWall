@@ -62,14 +62,17 @@ public class CustomWallLayerGUI extends JFrame {
     private void updateForm() {
         CustomWallLayout layout = CustomWallOptions.getCustomWallOptions().currentLayout;
 
+        this.topLayerComboBox.removeAllItems();
         this.topLayerComboBox.addItem("Focus");
         this.topLayerComboBox.addItem("Lock");
         this.topLayerComboBox.addItem("BG");
 
+        this.midLayerComboBox.removeAllItems();
         this.midLayerComboBox.addItem("Focus");
         this.midLayerComboBox.addItem("Lock");
         this.midLayerComboBox.addItem("BG");
 
+        this.botLayerComboBox.removeAllItems();
         this.botLayerComboBox.addItem("Focus");
         this.botLayerComboBox.addItem("Lock");
         this.botLayerComboBox.addItem("BG");
