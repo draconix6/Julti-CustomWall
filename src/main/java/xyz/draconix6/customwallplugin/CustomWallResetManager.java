@@ -279,6 +279,9 @@ public class CustomWallResetManager extends DynamicWallResetManager {
 
     @Override
     public void notifyPreviewLoaded(MinecraftInstance instance) {
+        if (getLockedInstances().contains(instance)) {
+            return;
+        }
         List<MinecraftInstance> displayInstances = this.getDisplayInstances();
         if (displayInstances.contains(instance)) {
             return;
